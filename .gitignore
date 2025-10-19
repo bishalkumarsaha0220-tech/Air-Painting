@@ -1,0 +1,86 @@
+# Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+_pycache_/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+# These are the files causing the warnings you see.
+# They should not be committed to source control.
+*.manifest
+*.spec
+# This is the directory PyInstaller creates for the final executable
+# The PyInstaller spec file will usually be in the root directory of the project
+dist/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Environments (The main cause of your warnings)
+# Explicitly ignore the virtual environment directory
+.venv
+venv/
+env/
+ENV/
+.env
+.env.*
+VENV/
+venv.bak/
+env.bak/
+
+# Backup files
+*.bak
+*.orig
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
