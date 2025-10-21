@@ -1,0 +1,4 @@
+# .streamlit/config.toml
+[runner]
+# Use a well-supported Python version (3.9, 3.10, or 3.11 are usually safe)
+python_version = "3.10"
