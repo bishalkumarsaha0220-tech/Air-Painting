@@ -44,7 +44,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="title">🖌️ Virtual Air Painter</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🖌️Air Painting </div>', unsafe_allow_html=True)
 st.markdown('<div class="subheader">Draw in the air using your fingers — powered by OpenCV, Mediapipe & Streamlit</div>', unsafe_allow_html=True)
 
 # ---------------- Initialize points for colors ---------------- #
