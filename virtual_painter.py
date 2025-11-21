@@ -47,7 +47,7 @@ st.markdown("""
 st.markdown('<div class="title">🖌️Air Painting </div>', unsafe_allow_html=True)
 st.markdown('<div class="subheader">Draw in the air using your fingers — powered by OpenCV, Mediapipe & Streamlit</div>', unsafe_allow_html=True)
 
-# ---------------- Initialize points for colors ---------------- #
+# ---------------- Initialize points ---------------- #
 bpoints = [deque(maxlen=1024)]
 gpoints = [deque(maxlen=1024)]
 rpoints = [deque(maxlen=1024)]
@@ -57,63 +57,47 @@ blue_index = green_index = red_index = yellow_index = 0
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 255, 255)]
 colorIndex = 0
 
-# ---------------- Canvas setup ---------------- #
+# ---------------- Canvas ---------------- #
 paintWindow = np.ones((471, 636, 3), dtype=np.uint8) * 255
 
 def draw_buttons(img):
     buttons = {
-        "CLEAR": (40, 1, 140, 65, (255, 255, 255)),   # White background for CLEAR
+        "CLEAR": (40, 1, 140, 65, (255, 255, 255)),
         "BLUE": (160, 1, 255, 65, (255, 0, 0)),
         "GREEN": (275, 1, 370, 65, (0, 255, 0)),
         "RED": (390, 1, 485, 65, (0, 0, 255)),
         "YELLOW": (505, 1, 600, 65, (0, 255, 255))
     }
-
     for text, (x1, y1, x2, y2, color) in buttons.items():
-        # Filled rectangle for button background
         cv2.rectangle(img, (x1, y1), (x2, y2), color, -1)
-
-        # Text color contrast (black for bright bg, white for dark bg)
         text_color = (0, 0, 0) if text == "CLEAR" else (255, 255, 255)
-        if text == "YELLOW":  # for yellow background, use dark text
+        if text == "YELLOW":
             text_color = (50, 50, 50)
-
         cv2.putText(img, text, (x1 + 10, y2 // 2 + 5),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, text_color, 2, cv2.LINE_AA)
-
-        # Optional border for clean look
         cv2.rectangle(img, (x1, y1), (x2, y2), (30, 30, 30), 2)
 
 draw_buttons(paintWindow)
 
-# ---------------- Mediapipe Hands ---------------- #
+# ---------------- Mediapipe ---------------- #
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
 mpDraw = mp.solutions.drawing_utils
 
-# ---------------- Sidebar Controls ---------------- #
+# ---------------- Sidebar ---------------- #
 st.sidebar.header("🎨 Paint Controls")
-st.sidebar.write("Customize your painting experience:")
-
-brush_color = st.sidebar.radio(
-    "Select Brush Color:",
-    ["Blue", "Green", "Red", "Yellow"],
-    index=0
-)
+brush_color = st.sidebar.radio("Select Brush Color:", ["Blue", "Green", "Red", "Yellow"], index=0)
 colorIndex = ["Blue", "Green", "Red", "Yellow"].index(brush_color)
-
 brush_thickness = st.sidebar.slider("Brush Thickness", 2, 10, 2)
 show_landmarks = st.sidebar.toggle("Show Hand Landmarks", True)
 st.sidebar.markdown("---")
 st.sidebar.info("👆 Tip: Raise your index finger to draw. Pinch thumb and finger to lift pen. Use buttons above to switch colors or clear canvas.")
 
-st.markdown("---")
-
-# ---------------- Main Layout ---------------- #
+# ---------------- Layout ---------------- #
 col1, col2 = st.columns([1, 1.1])
 stframe = col1.empty()
 stcanvas = col2.empty()
-start_button = st.sidebar.button("▶️ Start Painting", use_container_width=True)
+start_button = st.sidebar.button("▶️ Start Painting")
 
 # ---------------- Main Loop ---------------- #
 if start_button:
@@ -154,42 +138,33 @@ if start_button:
                     rpoints.append(deque(maxlen=512)); red_index += 1
                     ypoints.append(deque(maxlen=512)); yellow_index += 1
 
-                # Button click
+                # Button clicks
                 elif fore_finger[1] <= 65:
                     x, y = fore_finger
-                    if 40 <= x <= 140:  # Clear
+                    if 40 <= x <= 140:
                         bpoints = [deque(maxlen=512)]
                         gpoints = [deque(maxlen=512)]
                         rpoints = [deque(maxlen=512)]
                         ypoints = [deque(maxlen=512)]
                         blue_index = green_index = red_index = yellow_index = 0
                         paintWindow[67:, :, :] = 255
-                    elif 160 <= x <= 255:
-                        colorIndex = 0
-                    elif 275 <= x <= 370:
-                        colorIndex = 1
-                    elif 390 <= x <= 485:
-                        colorIndex = 2
-                    elif 505 <= x <= 600:
-                        colorIndex = 3
+                    elif 160 <= x <= 255: colorIndex = 0
+                    elif 275 <= x <= 370: colorIndex = 1
+                    elif 390 <= x <= 485: colorIndex = 2
+                    elif 505 <= x <= 600: colorIndex = 3
 
-                # Drawing
+                # Draw lines
                 else:
-                    if colorIndex == 0:
-                        bpoints[blue_index].appendleft(fore_finger)
-                    elif colorIndex == 1:
-                        gpoints[green_index].appendleft(fore_finger)
-                    elif colorIndex == 2:
-                        rpoints[red_index].appendleft(fore_finger)
-                    elif colorIndex == 3:
-                        ypoints[yellow_index].appendleft(fore_finger)
+                    if colorIndex == 0: bpoints[blue_index].appendleft(fore_finger)
+                    elif colorIndex == 1: gpoints[green_index].appendleft(fore_finger)
+                    elif colorIndex == 2: rpoints[red_index].appendleft(fore_finger)
+                    elif colorIndex == 3: ypoints[yellow_index].appendleft(fore_finger)
             else:
                 bpoints.append(deque(maxlen=512)); blue_index += 1
                 gpoints.append(deque(maxlen=512)); green_index += 1
                 rpoints.append(deque(maxlen=512)); red_index += 1
                 ypoints.append(deque(maxlen=512)); yellow_index += 1
 
-            # Draw lines
             points = [bpoints, gpoints, rpoints, ypoints]
             for i, color_points in enumerate(points):
                 for j in range(len(color_points)):
@@ -199,8 +174,8 @@ if start_button:
                         cv2.line(frame, color_points[j][k - 1], color_points[j][k], colors[i], brush_thickness)
                         cv2.line(paintWindow, color_points[j][k - 1], color_points[j][k], colors[i], brush_thickness)
 
-            stframe.image(frame, channels="BGR", use_container_width=True)
-            stcanvas.image(paintWindow, channels="BGR", use_container_width=True)
+            stframe.image(frame, channels="BGR")
+            stcanvas.image(paintWindow, channels="BGR")
             time.sleep(0.01)
 
         cap.release()
